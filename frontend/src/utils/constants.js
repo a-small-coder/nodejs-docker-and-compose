@@ -1,4 +1,4 @@
-export const URL = "http://localhost:3001";
+export const URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 export const MINIMUM_PASSWORD_LENGTH = 3;
 export const MINIMUM_USERNAME_LENGTH = 3;
