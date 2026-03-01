@@ -142,8 +142,8 @@ export const GiftPage = ({ extraClass = "" }) => {
           <h2 className="text text_ty-e_h2">Список поддержавших</h2>
         </div>
         {wishData?.offers?.length ? (
-          wishData?.offers?.map(({ name, amount, createdAt }) => (
-            <UserSupportedCard name={name} amount={amount} date={createdAt} />
+          wishData?.offers?.map(({ name, amount, createdAt, img }) => (
+            <UserSupportedCard name={name} amount={amount} date={createdAt} img={img} />
           ))
         ) : (
           <p>Пока никого нет</p>
