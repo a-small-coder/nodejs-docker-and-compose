@@ -21,24 +21,24 @@ export class WishlistsService {
     private wishesRepository: Repository<Wish>,
   ) {}
 
-  private async ensureWishIdsExist(itemIds: number[]): Promise<void> {
-    if (itemIds.length === 0) return;
+  private async ensureWishIdsExist(itemsIds: number[]): Promise<void> {
+    if (itemsIds.length === 0) return;
     const found = await this.wishesRepository.find({
-      where: { id: In(itemIds) },
+      where: { id: In(itemsIds) },
     });
-    if (found.length !== itemIds.length) {
+    if (found.length !== itemsIds.length) {
       throw new BadRequestException('Один или несколько подарков не найдены');
     }
   }
 
   async create(data: CreateWishlistDto & { owner: Pick<User, 'id'> }) {
-    const { itemIds, ...rest } = data;
-    if (itemIds?.length) {
-      await this.ensureWishIdsExist(itemIds);
+    const { itemsId, ...rest } = data;
+    if (itemsId?.length) {
+      await this.ensureWishIdsExist(itemsId);
     }
     const entity = this.wishlistsRepository.create({
       ...rest,
-      items: itemIds?.map((id) => ({ id })),
+      items: itemsId?.map((id) => ({ id })),
     } as DeepPartial<Wishlist>);
     return this.wishlistsRepository.save(entity);
   }
@@ -46,14 +46,14 @@ export class WishlistsService {
   findOne(where: FindOptionsWhere<Wishlist>) {
     return this.wishlistsRepository.findOne({
       where,
-      relations: ['items'],
+      relations: ['items', 'owner'],
     });
   }
 
   find(where: FindOptionsWhere<Wishlist>) {
     return this.wishlistsRepository.find({
       where,
-      relations: ['items'],
+      relations: ['items', 'owner'],
     });
   }
 
@@ -87,16 +87,16 @@ export class WishlistsService {
     if (wishlist.owner.id !== userId) {
       throw new ForbiddenException('Нельзя редактировать чужую подборку');
     }
-    const { itemIds, ...rest } = updateWishlistDto;
-    if (itemIds !== undefined) {
-      await this.ensureWishIdsExist(itemIds);
-      wishlist.items = itemIds.map((id) => ({ id } as Wishlist['items'][0]));
+    const { itemsId, ...rest } = updateWishlistDto;
+    if (itemsId !== undefined) {
+      await this.ensureWishIdsExist(itemsId);
+      wishlist.items = itemsId.map((id) => ({ id } as Wishlist['items'][0]));
     }
     Object.assign(wishlist, rest);
     await this.wishlistsRepository.save(wishlist);
     return this.wishlistsRepository.findOne({
       where: { id: wishlistId },
-      relations: ['items'],
+      relations: ['items', 'owner'],
     });
   }
 

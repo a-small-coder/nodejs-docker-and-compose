@@ -23,5 +23,5 @@ export class CreateWishlistDto {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  itemIds?: number[];
+  itemsId?: number[];
 }
